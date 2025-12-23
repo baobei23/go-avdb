@@ -1,0 +1,52 @@
+package api
+
+import (
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+)
+
+func (app *Application) Mount() http.Handler {
+	r := chi.NewRouter()
+
+	// A good base middleware stack
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	// Set a timeout value on the request context (ctx), that will signal
+	// through ctx.Done() that the request has timed out and further
+	// processing should be stopped.
+	r.Use(middleware.Timeout(60 * time.Second))
+
+	//base
+	r.Get("/", app.healthHandler)
+
+	//crawler
+	r.Route("/crawler", func(r chi.Router) {
+		r.Get("/health", app.healthHandler)
+	})
+
+	//video
+	r.Route("/video", func(r chi.Router) {
+		r.Get("/health", app.healthHandler)
+	})
+
+	return r
+}
+
+func (app *Application) Run(mux http.Handler) error {
+	srv := &http.Server{
+		Addr:         app.Config.Port,
+		Handler:      mux,
+		WriteTimeout: 30 * time.Second,
+		ReadTimeout:  10 * time.Second,
+	}
+
+	log.Printf("Starting server on %s", app.Config.Port)
+	return srv.ListenAndServe()
+}
