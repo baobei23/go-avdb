@@ -27,9 +27,6 @@ const docTemplate = `{
         "/crawl/{page}": {
             "get": {
                 "description": "Crawl single page",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -55,11 +52,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {}
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {}
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }

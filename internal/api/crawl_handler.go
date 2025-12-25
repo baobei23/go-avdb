@@ -11,7 +11,7 @@ import (
 
 type CrawlResponse struct {
 	Status string `json:"status"`
-	Page   int    `json:"page"`
+	Page   int    `json:"page,omitempty"`
 	Start  int    `json:"start,omitempty"`
 	End    int    `json:"end,omitempty"`
 }
@@ -21,12 +21,11 @@ type CrawlResponse struct {
 //	@Summary		Crawl page
 //	@Description	Crawl single page
 //	@Tags			crawler
-//	@Accept			json
 //	@Produce		json
 //	@Param			page	path		int	true	"Page number"
 //	@Success		202		{object}	CrawlResponse
-//	@Failure		400		{object}	error
-//	@Failure		500		{object}	error
+//	@Failure		400		{string}	error
+//	@Failure		500		{string}	error
 //	@Router			/crawl/{page} [get]
 func (app *Application) crawlPage(w http.ResponseWriter, r *http.Request) {
 	pageStr := chi.URLParam(r, "page")
