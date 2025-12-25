@@ -9,6 +9,8 @@ type Storage struct {
 	Video interface {
 		// Video operations
 		Upsert(ctx context.Context, video Video) error
+		GetVideoBySlug(ctx context.Context, slug string) (*Video, error)
+		GetVideoList(ctx context.Context) ([]Video, error)
 		//GetByID(ctx context.Context, id int64) (*Video, error)
 
 		// Relationship operations

@@ -28,12 +28,15 @@ func (app *Application) Mount() http.Handler {
 
 	//crawler
 	r.Route("/crawl", func(r chi.Router) {
-		r.Get("/{page}", app.crawlHandler)
+		r.Get("/{page}", app.crawlPage)
+		r.Get("/all", app.crawlAll)
+		r.Get("/range", app.crawlRange)
 	})
 
 	//video
 	r.Route("/video", func(r chi.Router) {
-		r.Get("/health", app.healthHandler)
+		r.Get("/", app.getVideoList)
+		r.Get("/{slug}", app.getVideo)
 	})
 
 	return r

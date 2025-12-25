@@ -8,7 +8,7 @@ import (
 )
 
 type Crawler interface {
-	CrawlPage(ctx context.Context, page int) (*CrawlResult, error)
+	CrawlPage(ctx context.Context, page int) error
 	CrawlRange(ctx context.Context, start, end int) error
 	CrawlAll(ctx context.Context) error
 }

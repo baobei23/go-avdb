@@ -38,3 +38,11 @@ func (s *videoStore) UpsertDirector(ctx context.Context, videoID int64, director
 func (s *videoStore) UpsertStudio(ctx context.Context, videoID int64, studioName string) error {
 	return nil
 }
+
+func (s *videoStore) GetVideoList(ctx context.Context) ([]Video, error) {
+	return []Video{}, nil
+}
+
+func (s *videoStore) GetVideoBySlug(ctx context.Context, slug string) (*Video, error) {
+	return &Video{}, nil
+}

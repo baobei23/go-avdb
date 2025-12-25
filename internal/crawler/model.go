@@ -53,12 +53,3 @@ type VideoItemProvide1 struct {
 	VodID     int64  `json:"vod_id"`
 	VodWriter string `json:"vod_writer"` // Studio name
 }
-
-// CrawlResult hasil crawling per halaman
-type CrawlResult struct {
-	Page         int
-	VideosCount  int
-	SuccessCount int
-	ErrorCount   int
-	Errors       []error
-}
