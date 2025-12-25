@@ -9,6 +9,25 @@ import (
 	"go.uber.org/zap"
 )
 
+type CrawlResponse struct {
+	Status string `json:"status"`
+	Page   int    `json:"page"`
+	Start  int    `json:"start,omitempty"`
+	End    int    `json:"end,omitempty"`
+}
+
+// crawlPage godoc
+//
+//	@Summary		Crawl page
+//	@Description	Crawl single page
+//	@Tags			crawler
+//	@Accept			json
+//	@Produce		json
+//	@Param			page	path		int	true	"Page number"
+//	@Success		202		{object}	CrawlResponse
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Router			/crawl/{page} [get]
 func (app *Application) crawlPage(w http.ResponseWriter, r *http.Request) {
 	pageStr := chi.URLParam(r, "page")
 	page, err := strconv.Atoi(pageStr)
@@ -24,9 +43,9 @@ func (app *Application) crawlPage(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	if err := app.jsonResponse(w, http.StatusAccepted, map[string]string{
-		"status": "crawling page started",
-		"page":   pageStr,
+	if err := app.jsonResponse(w, http.StatusAccepted, CrawlResponse{
+		Status: "crawling page started",
+		Page:   page,
 	}); err != nil {
 		app.internalServerError(w, r, err)
 	}
@@ -40,8 +59,8 @@ func (app *Application) crawlAll(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	if err := app.jsonResponse(w, http.StatusAccepted, map[string]string{
-		"status": "crawling all started",
+	if err := app.jsonResponse(w, http.StatusAccepted, CrawlResponse{
+		Status: "crawling all started",
 	}); err != nil {
 		app.internalServerError(w, r, err)
 	}
@@ -69,10 +88,10 @@ func (app *Application) crawlRange(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	if err := app.jsonResponse(w, http.StatusAccepted, map[string]string{
-		"status": "crawling range started",
-		"start":  startStr,
-		"end":    endStr,
+	if err := app.jsonResponse(w, http.StatusAccepted, CrawlResponse{
+		Status: "crawling range started",
+		Start:  start,
+		End:    end,
 	}); err != nil {
 		app.internalServerError(w, r, err)
 	}

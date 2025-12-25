@@ -1,0 +1,53 @@
+basePath: /
+definitions:
+  api.CrawlResponse:
+    properties:
+      end:
+        type: integer
+      page:
+        type: integer
+      start:
+        type: integer
+      status:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: AVDB crawler and API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Go - AVDB
+paths:
+  /crawl/{page}:
+    get:
+      consumes:
+      - application/json
+      description: Crawl single page
+      parameters:
+      - description: Page number
+        in: path
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/api.CrawlResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Crawl page
+      tags:
+      - crawler
+swagger: "2.0"

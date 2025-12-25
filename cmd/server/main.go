@@ -8,6 +8,7 @@ import (
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 
+	_ "github.com/baobei23/go-avdb/docs"
 	"github.com/baobei23/go-avdb/internal/api"
 	"github.com/baobei23/go-avdb/internal/crawler"
 	"github.com/baobei23/go-avdb/internal/db"
@@ -17,10 +18,22 @@ import (
 	"go.uber.org/zap"
 )
 
+//	@title			Go - AVDB
+//	@description	AVDB crawler and API
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @BasePath	/
 func main() {
 	cfg := api.Config{
 		Port:   env.GetString("PORT", ":8080"),
-		ApiURL: env.GetString("API_URL", "localhost:8080"),
+		ApiURL: env.GetString("API_URL", "http://localhost:8080"),
 		DB: api.DBConfig{
 			Addr:         env.GetString("DB_ADDR", "postgres://admin:adminpassword@localhost:5432/avdb?sslmode=disable"),
 			MaxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
