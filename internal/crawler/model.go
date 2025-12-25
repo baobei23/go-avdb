@@ -1,55 +1,49 @@
 package crawler
 
-// APIResponse untuk endpoint provide (base data)
+// APIResponse represents the generic response structure from the API
 type APIResponse struct {
-	Code      interface{} `json:"code"`
+	Code      any         `json:"code"`
 	Msg       string      `json:"msg"`
-	Page      interface{} `json:"page"`
-	PageCount interface{} `json:"pagecount"`
+	Page      any         `json:"page"`
+	PageCount any         `json:"pagecount"`
 	Limit     string      `json:"limit"`
-	Total     interface{} `json:"total"`
+	Total     any         `json:"total"`
 	List      []VideoItem `json:"list"`
 }
 
-// VideoItem dari API provide
+// VideoItem represents a video object in the `provide` API response
 type VideoItem struct {
-	ID          int64       `json:"vod_id"`
-	TypeName    string      `json:"type_name"`
-	Name        string      `json:"vod_name"`
-	Slug        string      `json:"vod_en"`
-	OriginName  string      `json:"vod_sub"`
-	PosterURL   string      `json:"vod_pic"`
-	ThumbURL    string      `json:"vod_pic_thumb"`
-	Description string      `json:"vod_content"`
-	Actor       []string    `json:"vod_actor"`
-	Category    []string    `json:"vod_class"`
-	Director    []string    `json:"vod_director"`
-	CreatedAt   string      `json:"vod_time"`
-	Episodes    EpisodeData `json:"vod_play_url"`
+	ID          int64    `json:"id"`
+	TypeName    string   `json:"type_name"`
+	Name        string   `json:"name"`
+	Slug        string   `json:"slug"`
+	OriginName  string   `json:"origin_name"`
+	PosterURL   string   `json:"poster_url"`
+	ThumbURL    string   `json:"thumb_url"`
+	Category    []string `json:"category"`
+	Actor       []string `json:"actor"`
+	Director    []string `json:"director"`
+	CreatedAt   string   `json:"created_at"`
+	Time        string   `json:"time"`
+	Description string   `json:"description"`
+	Episodes    struct {
+		ServerData map[string]struct {
+			LinkEmbed string `json:"link_embed"`
+		} `json:"server_data"`
+	} `json:"episodes"`
 }
 
-// EpisodeData struktur nested
-type EpisodeData struct {
-	ServerData map[string]ServerInfo `json:"server_data"`
-}
-
-type ServerInfo struct {
-	LinkEmbed string `json:"url"`
-}
-
-// APIResponseProvide1 untuk endpoint provide1 (supplemental data)
+// APIResponseProvide1 represents the response from `provide1` API
 type APIResponseProvide1 struct {
-	Code      interface{}         `json:"code"`
+	Code      any                 `json:"code"`
 	Msg       string              `json:"msg"`
-	Page      interface{}         `json:"page"`
-	PageCount interface{}         `json:"pagecount"`
-	Limit     string              `json:"limit"`
-	Total     interface{}         `json:"total"`
+	Page      any                 `json:"page"`
+	PageCount any                 `json:"pagecount"`
 	List      []VideoItemProvide1 `json:"list"`
 }
 
-// VideoItemProvide1 dari API provide1 (hanya untuk studio)
+// VideoItemProvide1 represents a video object in the `provide1` API response
 type VideoItemProvide1 struct {
 	VodID     int64  `json:"vod_id"`
-	VodWriter string `json:"vod_writer"` // Studio name
+	VodWriter string `json:"vod_writer"`
 }

@@ -58,14 +58,14 @@ func main() {
 	storage := store.NewStorage(db)
 
 	// crawler
-	//crawler := crawler.NewService(cfg.Crawler, storage)
+	crawlerService := crawler.NewService(cfg.Crawler, storage)
 
 	// application
 	app := &api.Application{
-		Config: cfg,
-		Store:  storage,
-		Logger: logger,
-		//Crawler: crawler,
+		Config:  cfg,
+		Store:   storage,
+		Logger:  logger,
+		Crawler: crawlerService,
 	}
 
 	// metrics collected

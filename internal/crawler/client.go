@@ -1,7 +1,7 @@
 package crawler
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,63 +9,57 @@ import (
 )
 
 type HTTPClient interface {
-	Get(ctx context.Context, url string) ([]byte, error)
+	FetchProvide(url string) (*APIResponse, error)
+	FetchProvide1(url string) (*APIResponseProvide1, error)
 }
 
-type DefaultHTTPClient struct {
-	client     *http.Client
-	maxRetries int
-	retryDelay time.Duration
+type httpClient struct {
+	client *http.Client
 }
 
-func NewHTTPClient(timeout time.Duration, maxRetries int) *DefaultHTTPClient {
-	return &DefaultHTTPClient{
+func NewHTTPClient(timeout time.Duration, retries int) HTTPClient {
+	return &httpClient{
 		client: &http.Client{
+			// Simple timeout, retries would need a custom Transport or loop in the caller
 			Timeout: timeout,
 		},
-		maxRetries: maxRetries,
-		retryDelay: 2 * time.Second,
 	}
 }
 
-func (c *DefaultHTTPClient) Get(ctx context.Context, url string) ([]byte, error) {
-	var lastErr error
+func (c *httpClient) FetchProvide(url string) (*APIResponse, error) {
+	var resp APIResponse
+	if err := c.fetch(url, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
 
-	for attempt := 0; attempt <= c.maxRetries; attempt++ {
-		if attempt > 0 {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			case <-time.After(c.retryDelay):
-			}
-		}
+func (c *httpClient) FetchProvide1(url string) (*APIResponseProvide1, error) {
+	var resp APIResponseProvide1
+	if err := c.fetch(url, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-		if err != nil {
-			return nil, fmt.Errorf("create request: %w", err)
-		}
+func (c *httpClient) fetch(url string, target any) error {
+	res, err := c.client.Get(url)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
 
-		resp, err := c.client.Do(req)
-		if err != nil {
-			lastErr = err
-			continue
-		}
-
-		body, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
-
-		if err != nil {
-			lastErr = err
-			continue
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			lastErr = fmt.Errorf("unexpected status: %d", resp.StatusCode)
-			continue
-		}
-
-		return body, nil
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
-	return nil, fmt.Errorf("failed after %d attempts: %w", c.maxRetries, lastErr)
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(body, target); err != nil {
+		return fmt.Errorf("unmarshal error: %w", err)
+	}
+	return nil
 }
