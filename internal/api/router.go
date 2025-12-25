@@ -23,12 +23,12 @@ func (app *Application) Mount() http.Handler {
 	// processing should be stopped.
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	//base
-	r.Get("/", app.healthHandler)
+	//health
+	r.Get("/health", app.healthHandler)
 
 	//crawler
-	r.Route("/crawler", func(r chi.Router) {
-		r.Get("/health", app.healthHandler)
+	r.Route("/crawl", func(r chi.Router) {
+		r.Get("/{page}", app.crawlHandler)
 	})
 
 	//video
