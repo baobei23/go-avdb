@@ -24,7 +24,7 @@ func (app *Application) Mount() http.Handler {
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	//health
-	r.Get("/health", app.healthHandler)
+	r.Get("/", app.healthHandler)
 
 	//crawler
 	r.Route("/crawl", func(r chi.Router) {

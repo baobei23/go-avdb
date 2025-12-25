@@ -17,8 +17,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const version = "1.0.0"
-
 func main() {
 	cfg := api.Config{
 		Port:   env.GetString("PORT", ":8080"),
@@ -36,6 +34,8 @@ func main() {
 			MaxRetries:      env.GetInt("CRAWLER_MAX_RETRIES", 3),
 			PageDelay:       time.Duration(env.GetInt("CRAWLER_PAGE_DELAY", 2)) * time.Second,
 		},
+		Env:     env.GetString("ENV", "development"),
+		Version: env.GetString("VERSION", "1.0.0"),
 	}
 	// logger
 	logger := zap.Must(zap.NewProduction())
@@ -69,7 +69,7 @@ func main() {
 	}
 
 	// metrics collected
-	expvar.NewString("version").Set(version)
+	expvar.NewString("version").Set(cfg.Version)
 	expvar.Publish("database", expvar.Func(func() any {
 		return db.Stats()
 	}))

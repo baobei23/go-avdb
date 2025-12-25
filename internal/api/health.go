@@ -3,5 +3,13 @@ package api
 import "net/http"
 
 func (app *Application) healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+	data := map[string]string{
+		"status":  "ok",
+		"env":     app.Config.Env,
+		"version": app.Config.Version,
+	}
+
+	if err := app.jsonResponse(w, http.StatusOK, data); err != nil {
+		app.internalServerError(w, r, err)
+	}
 }

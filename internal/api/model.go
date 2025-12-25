@@ -18,6 +18,8 @@ type Config struct {
 	ApiURL  string
 	DB      DBConfig
 	Crawler crawler.Config
+	Env     string
+	Version string
 }
 
 type DBConfig struct {
