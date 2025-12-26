@@ -14,6 +14,10 @@ type Video struct {
 	LinkEmbed   string     `json:"link_embed"`
 	CreatedAt   *time.Time `json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
+	Actor       []string   `json:"actor,omitempty"`
+	Tag         []string   `json:"tag,omitempty"`
+	Studio      []string   `json:"studio,omitempty"`
+	Director    []string   `json:"director,omitempty"`
 }
 
 type Actor struct {

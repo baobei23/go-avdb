@@ -35,7 +35,9 @@ func (app *Application) Mount() http.Handler {
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	//health
-	r.Get("/", app.healthHandler)
+	r.Get("/", app.health)
+
+	//swagger
 	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL("doc.json")))
 
 	//crawler
@@ -49,6 +51,39 @@ func (app *Application) Mount() http.Handler {
 	r.Route("/video", func(r chi.Router) {
 		r.Get("/", app.getVideoList)
 		r.Get("/{slug}", app.getVideo)
+		//r.Get("/actor/{actor}", app.getVideoByActor)
+	})
+
+	// Actor
+	r.Route("/actor", func(r chi.Router) {
+		r.Post("/", app.createActor)
+		r.Get("/", app.getActorList)
+		r.Get("/{name}", app.health)
+		r.Put("/{id}", app.updateActor)
+	})
+
+	// Director
+	r.Route("/director", func(r chi.Router) {
+		r.Post("/", app.health)
+		r.Get("/", app.health)
+		r.Get("/{name}", app.health)
+		r.Put("/{id}", app.health)
+	})
+
+	// Tag
+	r.Route("/tag", func(r chi.Router) {
+		r.Post("/", app.health)
+		r.Get("/", app.health)
+		r.Get("/{name}", app.health)
+		r.Put("/{id}", app.health)
+	})
+
+	// Studio
+	r.Route("/studio", func(r chi.Router) {
+		r.Post("/", app.health)
+		r.Get("/", app.health)
+		r.Get("/{name}", app.health)
+		r.Put("/{id}", app.health)
 	})
 
 	return r

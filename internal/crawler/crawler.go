@@ -149,7 +149,7 @@ func (s *service) processVideoItem(ctx context.Context, item VideoItem) error {
 		CreatedAt:   createdAt,
 	}
 
-	if err := s.store.Video.Upsert(ctx, video); err != nil {
+	if err := s.store.Video.Upsert(ctx, &video); err != nil {
 		return err
 	}
 

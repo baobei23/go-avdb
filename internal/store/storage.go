@@ -3,15 +3,25 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"time"
+)
+
+var (
+	ErrNotFound          = errors.New("resource not found")
+	ErrConflict          = errors.New("resource already exists")
+	QueryTimeoutDuration = time.Second * 5
 )
 
 type Storage struct {
 	Video interface {
 		// Video operations
-		Upsert(ctx context.Context, video Video) error
-		GetVideoBySlug(ctx context.Context, slug string) (*Video, error)
-		GetVideoList(ctx context.Context) ([]Video, error)
-		//GetByID(ctx context.Context, id int64) (*Video, error)
+		Upsert(ctx context.Context, video *Video) error
+
+		// Read
+		GetList(ctx context.Context) ([]Video, error)
+		GetBySlug(ctx context.Context, slug string) (*Video, error)
+		//GetByActor(ctx context.Context, actor string) ([]Video, error)
 
 		// Relationship operations
 		UpsertActor(ctx context.Context, videoID int64, actor []string) error
@@ -20,23 +30,20 @@ type Storage struct {
 		UpsertStudio(ctx context.Context, videoID int64, studio string) error
 	}
 	Actor interface {
-		Upsert(ctx context.Context, actor Actor) error
-		GetByID(ctx context.Context, id int64) (*Actor, error)
+		Create(ctx context.Context, actor *Actor) error
+		Update(ctx context.Context, actor *Actor) error
 		GetList(ctx context.Context) ([]Actor, error)
 	}
 	Tag interface {
-		Upsert(ctx context.Context, tag Tag) error
-		GetByID(ctx context.Context, id int64) (*Tag, error)
+		Create(ctx context.Context, tag *Tag) error
 		GetList(ctx context.Context) ([]Tag, error)
 	}
 	Studio interface {
-		Upsert(ctx context.Context, studio Studio) error
-		GetByID(ctx context.Context, id int64) (*Studio, error)
+		Create(ctx context.Context, studio *Studio) error
 		GetList(ctx context.Context) ([]Studio, error)
 	}
 	Director interface {
-		Upsert(ctx context.Context, director Director) error
-		GetByID(ctx context.Context, id int64) (*Director, error)
+		Create(ctx context.Context, director *Director) error
 		GetList(ctx context.Context) ([]Director, error)
 	}
 }
@@ -44,5 +51,6 @@ type Storage struct {
 func NewStorage(db *sql.DB) Storage {
 	return Storage{
 		Video: &videoStore{db: db},
+		Actor: &actorStore{db: db},
 	}
 }

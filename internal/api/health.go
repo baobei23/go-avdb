@@ -2,7 +2,7 @@ package api
 
 import "net/http"
 
-func (app *Application) healthHandler(w http.ResponseWriter, r *http.Request) {
+func (app *Application) health(w http.ResponseWriter, r *http.Request) {
 	data := map[string]string{
 		"status":  "ok",
 		"env":     app.Config.Env,
