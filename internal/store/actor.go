@@ -84,6 +84,31 @@ func (s *actorStore) GetList(ctx context.Context) ([]Actor, error) {
 	return actors, nil
 }
 
+func (s *actorStore) Delete(ctx context.Context, id int64) error {
+	query := `
+		DELETE FROM actor
+		WHERE id = $1
+	`
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	res, err := s.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return ErrNotFound
+	}
+
+	return nil
+}
+
 // alternative func
 // func (s *actorStore) Updatee(ctx context.Context, actor Actor) error {
 // 	query := `

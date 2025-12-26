@@ -60,6 +60,10 @@ func (m *MockActorStore) GetList(ctx context.Context) ([]Actor, error) {
 	return []Actor{}, nil
 }
 
+func (m *MockActorStore) Delete(ctx context.Context, id int64) error {
+	return nil
+}
+
 type MockDirectorStore struct{}
 
 func (m *MockDirectorStore) Create(ctx context.Context, director *Director) error {

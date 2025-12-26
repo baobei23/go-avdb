@@ -132,3 +132,37 @@ func (app *Application) updateActor(w http.ResponseWriter, r *http.Request) {
 		app.internalServerError(w, r, err)
 	}
 }
+
+// deleteActor godoc
+//
+//	@Summary		Delete actor
+//	@Description	Delete actor
+//	@Tags			actor
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Actor ID"
+//	@Success		204	{string}	string
+//	@Failure		404	{string}	error
+//	@Failure		500	{string}	error
+//	@Router			/actor/{id} [delete]
+func (app *Application) deleteActor(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if err := app.Store.Actor.Delete(r.Context(), id); err != nil {
+		switch {
+		case errors.Is(err, store.ErrNotFound):
+			app.notFoundResponse(w, r, err)
+		default:
+			app.internalServerError(w, r, err)
+		}
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusNoContent, nil); err != nil {
+		app.internalServerError(w, r, err)
+	}
+}

@@ -33,6 +33,7 @@ type Storage struct {
 		Create(ctx context.Context, actor *Actor) error
 		Update(ctx context.Context, actor *Actor) error
 		GetList(ctx context.Context) ([]Actor, error)
+		Delete(ctx context.Context, id int64) error
 	}
 	Tag interface {
 		Create(ctx context.Context, tag *Tag) error

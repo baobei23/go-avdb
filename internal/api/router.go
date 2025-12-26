@@ -60,6 +60,8 @@ func (app *Application) Mount() http.Handler {
 		r.Get("/", app.getActorList)
 		r.Get("/{name}", app.health)
 		r.Put("/{id}", app.updateActor)
+		r.Delete("/{id}", app.deleteActor)
+		//TODO: merging router
 	})
 
 	// Director
