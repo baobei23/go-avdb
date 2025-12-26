@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -37,8 +36,7 @@ func (app *Application) Mount() http.Handler {
 
 	//health
 	r.Get("/", app.healthHandler)
-	docsURL := fmt.Sprintf("%s/swagger/doc.json", app.Config.ApiURL)
-	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
+	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL("doc.json")))
 
 	//crawler
 	r.Route("/crawl", func(r chi.Router) {

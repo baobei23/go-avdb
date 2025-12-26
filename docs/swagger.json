@@ -16,9 +16,83 @@
     },
     "basePath": "/",
     "paths": {
+        "/crawl/all": {
+            "get": {
+                "description": "Crawl all pages asynchronously",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "crawler"
+                ],
+                "summary": "Crawl all",
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/api.CrawlResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/crawl/range": {
+            "get": {
+                "description": "Crawl range of pages asynchronously",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "crawler"
+                ],
+                "summary": "Crawl range",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Start page",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "End page",
+                        "name": "end",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/api.CrawlResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/crawl/{page}": {
             "get": {
-                "description": "Crawl single page",
+                "description": "Crawl single page asynchronously",
                 "produces": [
                     "application/json"
                 ],

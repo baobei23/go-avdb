@@ -19,7 +19,7 @@ type CrawlResponse struct {
 // crawlPage godoc
 //
 //	@Summary		Crawl page
-//	@Description	Crawl single page
+//	@Description	Crawl single page asynchronously
 //	@Tags			crawler
 //	@Produce		json
 //	@Param			page	path		int	true	"Page number"
@@ -50,6 +50,15 @@ func (app *Application) crawlPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// crawlAll godoc
+//
+//	@Summary		Crawl all
+//	@Description	Crawl all pages asynchronously
+//	@Tags			crawler
+//	@Produce		json
+//	@Success		202	{object}	CrawlResponse
+//	@Failure		500	{string}	error
+//	@Router			/crawl/all [get]
 func (app *Application) crawlAll(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		ctx := context.Background()
@@ -65,6 +74,18 @@ func (app *Application) crawlAll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// crawlRange godoc
+//
+//	@Summary		Crawl range
+//	@Description	Crawl range of pages asynchronously
+//	@Tags			crawler
+//	@Produce		json
+//	@Param			start	query		int	true	"Start page"
+//	@Param			end		query		int	true	"End page"
+//	@Success		202		{object}	CrawlResponse
+//	@Failure		400		{string}	error
+//	@Failure		500		{string}	error
+//	@Router			/crawl/range [get]
 func (app *Application) crawlRange(w http.ResponseWriter, r *http.Request) {
 	startStr := r.URL.Query().Get("start")
 	endStr := r.URL.Query().Get("end")

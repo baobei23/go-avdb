@@ -25,7 +25,7 @@ info:
 paths:
   /crawl/{page}:
     get:
-      description: Crawl single page
+      description: Crawl single page asynchronously
       parameters:
       - description: Page number
         in: path
@@ -48,6 +48,55 @@ paths:
           schema:
             type: string
       summary: Crawl page
+      tags:
+      - crawler
+  /crawl/all:
+    get:
+      description: Crawl all pages asynchronously
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/api.CrawlResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Crawl all
+      tags:
+      - crawler
+  /crawl/range:
+    get:
+      description: Crawl range of pages asynchronously
+      parameters:
+      - description: Start page
+        in: query
+        name: start
+        required: true
+        type: integer
+      - description: End page
+        in: query
+        name: end
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/api.CrawlResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Crawl range
       tags:
       - crawler
 swagger: "2.0"
