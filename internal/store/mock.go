@@ -46,6 +46,10 @@ func (m *MockVideoStore) GetByActor(ctx context.Context, actor string) ([]Video,
 	return []Video{}, nil
 }
 
+func (m *MockVideoStore) GetVideo(ctx context.Context, limit, offset int, search string) ([]Video, int, error) {
+	return []Video{}, 0, nil
+}
+
 type MockActorStore struct{}
 
 func (m *MockActorStore) Create(ctx context.Context, actor *Actor) error {

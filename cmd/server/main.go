@@ -6,8 +6,6 @@ import (
 	"runtime"
 	"time"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
-
 	_ "github.com/baobei23/go-avdb/docs"
 	"github.com/baobei23/go-avdb/internal/api"
 	"github.com/baobei23/go-avdb/internal/crawler"
@@ -35,10 +33,11 @@ func main() {
 		Port:   env.GetString("PORT", ":8080"),
 		ApiURL: env.GetString("API_URL", "http://localhost:8080"),
 		DB: api.DBConfig{
-			Addr:         env.GetString("DB_ADDR", "postgres://admin:adminpassword@localhost:5432/avdb?sslmode=disable"),
-			MaxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
-			MaxIdleConns: env.GetInt("DB_MAX_IDLE_CONNS", 30),
-			MaxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
+			Addr:            env.GetString("DB_ADDR", "postgres://admin:adminpassword@localhost:5432/avdb?sslmode=disable"),
+			MaxOpenConns:    env.GetInt("DB_MAX_OPEN_CONNS", 30),
+			MaxIdleConns:    env.GetInt("DB_MAX_IDLE_CONNS", 30),
+			MaxIdleTime:     time.Duration(env.GetInt("DB_MAX_IDLE_TIME", 15)) * time.Minute,
+			MaxConnLifetime: time.Duration(env.GetInt("DB_MAX_CONN_LIFETIME", 1)) * time.Hour,
 		},
 		Crawler: crawler.Config{
 			BaseURLProvide:  env.GetString("BASE_URL_PROVIDE", "https://avdbapi.com/api.php/provide/vod/"),
@@ -60,6 +59,7 @@ func main() {
 		cfg.DB.MaxOpenConns,
 		cfg.DB.MaxIdleConns,
 		cfg.DB.MaxIdleTime,
+		cfg.DB.MaxConnLifetime,
 	)
 	if err != nil {
 		logger.Fatal("failed to connect to database", zap.Error(err))
@@ -84,7 +84,7 @@ func main() {
 	// metrics collected
 	expvar.NewString("version").Set(cfg.Version)
 	expvar.Publish("database", expvar.Func(func() any {
-		return db.Stats()
+		return db.Stat()
 	}))
 	expvar.Publish("goroutines", expvar.Func(func() any {
 		return runtime.NumGoroutine()

@@ -2,11 +2,12 @@ package store
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type actorStore struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
 // CREATE
@@ -20,7 +21,7 @@ func (s *actorStore) Create(ctx context.Context, actor *Actor) error {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	err := s.db.QueryRowContext(ctx, query, actor.Name).Scan(&actor.ID)
+	err := s.db.QueryRow(ctx, query, actor.Name).Scan(&actor.ID)
 	if err != nil {
 		return err
 	}
@@ -38,17 +39,12 @@ func (s *actorStore) Update(ctx context.Context, actor *Actor) error {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	res, err := s.db.ExecContext(ctx, query, actor.Name, actor.ID)
+	res, err := s.db.Exec(ctx, query, actor.Name, actor.ID)
 	if err != nil {
 		return err
 	}
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if rowsAffected == 0 {
+	if res.RowsAffected() == 0 {
 		return ErrNotFound
 	}
 
@@ -66,7 +62,7 @@ func (s *actorStore) GetList(ctx context.Context) ([]Actor, error) {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	rows, err := s.db.QueryContext(ctx, query)
+	rows, err := s.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -92,17 +88,12 @@ func (s *actorStore) Delete(ctx context.Context, id int64) error {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	res, err := s.db.ExecContext(ctx, query, id)
+	res, err := s.db.Exec(ctx, query, id)
 	if err != nil {
 		return err
 	}
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if rowsAffected == 0 {
+	if res.RowsAffected() == 0 {
 		return ErrNotFound
 	}
 

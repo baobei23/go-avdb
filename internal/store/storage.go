@@ -2,9 +2,10 @@ package store
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var (
@@ -21,6 +22,7 @@ type Storage struct {
 		// Read
 		GetList(ctx context.Context) ([]Video, error)
 		GetBySlug(ctx context.Context, slug string) (*Video, error)
+		GetVideo(ctx context.Context, limit, offset int, search string) ([]Video, int, error)
 		//GetByActor(ctx context.Context, actor string) ([]Video, error)
 
 		// Relationship operations
@@ -49,7 +51,7 @@ type Storage struct {
 	}
 }
 
-func NewStorage(db *sql.DB) Storage {
+func NewStorage(db *pgxpool.Pool) Storage {
 	return Storage{
 		Video: &videoStore{db: db},
 		Actor: &actorStore{db: db},

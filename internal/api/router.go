@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -99,6 +98,6 @@ func (app *Application) Run(mux http.Handler) error {
 		ReadTimeout:  10 * time.Second,
 	}
 
-	log.Printf("Starting server on %s", app.Config.Port)
+	app.Logger.AppInfo.Info("Server started")
 	return srv.ListenAndServe()
 }

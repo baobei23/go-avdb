@@ -22,7 +22,7 @@ func (s *videoStore) Upsert(ctx context.Context, video *Video) error {
 			created_at = EXCLUDED.created_at,
 			updated_at = NOW();
 	`
-	_, err := s.db.ExecContext(ctx, query,
+	_, err := s.db.Exec(ctx, query,
 		video.ID,
 		video.Category,
 		video.Name,
@@ -46,14 +46,14 @@ func (s *videoStore) upsertRef(ctx context.Context, table string, value string) 
 	var id int64
 	// Try to find existing
 	queryFind := fmt.Sprintf("SELECT id FROM %s WHERE name = $1", table)
-	err := s.db.QueryRowContext(ctx, queryFind, value).Scan(&id)
+	err := s.db.QueryRow(ctx, queryFind, value).Scan(&id)
 	if err == nil {
 		return id, nil
 	}
 
 	// Insert new
 	queryInsert := fmt.Sprintf("INSERT INTO %s (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id", table)
-	err = s.db.QueryRowContext(ctx, queryInsert, value).Scan(&id)
+	err = s.db.QueryRow(ctx, queryInsert, value).Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("failed to upsert %s: %w", table, err)
 	}
@@ -70,7 +70,7 @@ func (s *videoStore) UpsertActor(ctx context.Context, videoID int64, actor []str
 		if id == 0 {
 			continue
 		}
-		_, err = s.db.ExecContext(ctx, "INSERT INTO video_actor (video_id, actor_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
+		_, err = s.db.Exec(ctx, "INSERT INTO video_actor (video_id, actor_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
 		if err != nil {
 			log.Printf("Error linking actor %d to video %d: %v", id, videoID, err)
 		}
@@ -88,7 +88,7 @@ func (s *videoStore) UpsertTag(ctx context.Context, videoID int64, tag []string)
 		if id == 0 {
 			continue
 		}
-		_, err = s.db.ExecContext(ctx, "INSERT INTO video_tag (video_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
+		_, err = s.db.Exec(ctx, "INSERT INTO video_tag (video_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
 		if err != nil {
 			log.Printf("Error linking tag %d to video %d: %v", id, videoID, err)
 		}
@@ -106,7 +106,7 @@ func (s *videoStore) UpsertDirector(ctx context.Context, videoID int64, director
 		if id == 0 {
 			continue
 		}
-		_, err = s.db.ExecContext(ctx, "INSERT INTO video_director (video_id, director_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
+		_, err = s.db.Exec(ctx, "INSERT INTO video_director (video_id, director_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
 		if err != nil {
 			log.Printf("Error linking director %d to video %d: %v", id, videoID, err)
 		}
@@ -122,6 +122,6 @@ func (s *videoStore) UpsertStudio(ctx context.Context, videoID int64, studioName
 	if id == 0 {
 		return nil
 	}
-	_, err = s.db.ExecContext(ctx, "INSERT INTO video_studio (video_id, studio_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
+	_, err = s.db.Exec(ctx, "INSERT INTO video_studio (video_id, studio_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
 	return err
 }
