@@ -315,6 +315,44 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/video/{slug}": {
+            "get": {
+                "description": "Get video detail by slug",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "Get video detail by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Video slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/store.Video"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -350,6 +388,68 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "store.Video": {
+            "type": "object",
+            "properties": {
+                "actor": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "category": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "director": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "link_embed": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "origin_name": {
+                    "type": "string"
+                },
+                "poster_url": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "studio": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tag": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "thumb_url": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

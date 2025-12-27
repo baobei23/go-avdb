@@ -100,32 +100,34 @@ func (s *actorStore) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-// alternative func
-// func (s *actorStore) Updatee(ctx context.Context, actor Actor) error {
-// 	query := `
-// 		UPDATE actor
-// 		SET name = $1
-// 		WHERE id = $2
-// 		RETURNING id
+/*
+//alternative func
+func (s *actorStore) Updatee(ctx context.Context, actor Actor) error {
+	query := `
+		UPDATE actor
+		SET name = $1
+		WHERE id = $2
+		RETURNING id
 
-// 	`
-// 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
-// 	defer cancel()
+	`
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
 
-// 	err := s.db.QueryRowContext(
-// 		ctx,
-// 		query,
-// 		actor.Name,
-// 		actor.ID,
-// 	).Scan(&actor.ID)
-// 	if err != nil {
-// 		switch {
-// 		case errors.Is(err, sql.ErrNoRows):
-// 			return ErrNotFound
-// 		default:
-// 			return err
-// 		}
-// 	}
+	err := s.db.QueryRowContext(
+		ctx,
+		query,
+		actor.Name,
+		actor.ID,
+	).Scan(&actor.ID)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrNotFound
+		default:
+			return err
+		}
+	}
 
-// 	return nil
-// }
+	return nil
+}
+*/

@@ -23,6 +23,47 @@ definitions:
       name:
         type: string
     type: object
+  store.Video:
+    properties:
+      actor:
+        items:
+          type: string
+        type: array
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      director:
+        items:
+          type: string
+        type: array
+      id:
+        type: integer
+      link_embed:
+        type: string
+      name:
+        type: string
+      origin_name:
+        type: string
+      poster_url:
+        type: string
+      slug:
+        type: string
+      studio:
+        items:
+          type: string
+        type: array
+      tag:
+        items:
+          type: string
+        type: array
+      thumb_url:
+        type: string
+      updated_at:
+        type: string
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -228,4 +269,29 @@ paths:
       summary: Crawl range
       tags:
       - crawler
+  /video/{slug}:
+    get:
+      consumes:
+      - application/json
+      description: Get video detail by slug
+      parameters:
+      - description: Video slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/store.Video'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get video detail by slug
+      tags:
+      - video
 swagger: "2.0"

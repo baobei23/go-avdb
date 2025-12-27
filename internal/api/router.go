@@ -98,6 +98,6 @@ func (app *Application) Run(mux http.Handler) error {
 		ReadTimeout:  10 * time.Second,
 	}
 
-	app.Logger.AppInfo.Info("Server started")
+	app.Logger.Info("Server started")
 	return srv.ListenAndServe()
 }
