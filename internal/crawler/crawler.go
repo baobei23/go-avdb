@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/baobei23/go-avdb/internal/store"
@@ -25,6 +26,7 @@ type Config struct {
 	Timeout         time.Duration
 	MaxRetries      int
 	PageDelay       time.Duration
+	WorkerCount     int
 }
 
 // service is crawler service with single responsibility
@@ -35,6 +37,9 @@ type service struct {
 }
 
 func NewService(config Config, store store.Storage) *service {
+	if config.WorkerCount <= 0 {
+		config.WorkerCount = 1
+	}
 	return &service{
 		config:     config,
 		httpClient: NewHTTPClient(config.Timeout, config.MaxRetries),
@@ -59,22 +64,58 @@ func (s *service) CrawlPage(ctx context.Context, page int) error {
 
 // CrawlRange crawls a range of pages
 func (s *service) CrawlRange(ctx context.Context, start, end int) error {
+
 	step := 1
 	if start > end {
 		step = -1
 	}
 
-	for i := start; i != end+step; i += step {
-		if err := s.CrawlPage(ctx, i); err != nil {
-			log.Printf("Error crawling page %d: %v", i, err)
-		} else {
-			log.Printf("Crawled page %d", i)
-		}
+	// Setup Worker Pool
+	jobs := make(chan int)
+	var wg sync.WaitGroup
 
-		if i != end {
-			time.Sleep(s.config.PageDelay)
-		}
+	workerCount := s.config.WorkerCount
+	log.Printf("Starting crawl with %d workers", workerCount)
+
+	for w := 0; w < workerCount; w++ {
+		wg.Add(1)
+		go func(workerID int) {
+			defer wg.Done()
+			for page := range jobs {
+
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
+
+				log.Printf("[Worker %d] Processing page %d", workerID, page)
+				if err := s.CrawlPage(ctx, page); err != nil {
+					log.Printf("[Worker %d] Error crawling page %d: %v", workerID, page, err)
+				} else {
+					log.Printf("[Worker %d] Finished page %d", workerID, page)
+				}
+
+				if s.config.PageDelay > 0 {
+					time.Sleep(s.config.PageDelay)
+				}
+			}
+		}(w + 1)
 	}
+
+	go func() {
+		defer close(jobs)
+		for i := start; i != end+step; i += step {
+			select {
+			case <-ctx.Done():
+				return
+			case jobs <- i:
+			}
+		}
+	}()
+
+	wg.Wait()
+	log.Println("Crawl range finished")
 	return nil
 }
 

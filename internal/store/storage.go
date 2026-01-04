@@ -20,9 +20,8 @@ type Storage struct {
 		Upsert(ctx context.Context, video *Video) error
 
 		// Read
-		GetList(ctx context.Context) ([]Video, error)
 		GetBySlug(ctx context.Context, slug string) (*Video, error)
-		GetVideo(ctx context.Context, limit, offset int, search string) ([]Video, int, error)
+		GetList(ctx context.Context, limit, offset int, search string) ([]Video, int, error)
 		//GetByActor(ctx context.Context, actor string) ([]Video, error)
 
 		// Relationship operations

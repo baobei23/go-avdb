@@ -45,6 +45,7 @@ func main() {
 			Timeout:         time.Duration(env.GetInt("CRAWLER_TIMEOUT", 30)) * time.Second,
 			MaxRetries:      env.GetInt("CRAWLER_MAX_RETRIES", 3),
 			PageDelay:       time.Duration(env.GetInt("CRAWLER_PAGE_DELAY", 2)) * time.Second,
+			WorkerCount:     env.GetInt("CRAWLER_WORKER_COUNT", 3),
 		},
 		Env:     env.GetString("ENV", "development"),
 		Version: env.GetString("VERSION", "1.0.0"),

@@ -14,17 +14,6 @@ type Application struct {
 	Crawler crawler.Crawler
 	Logger  *zap.Logger
 }
-type AppLogger interface {
-	Debug(msg string, fields ...zap.Field)
-	Info(msg string, fields ...zap.Field)
-	Warn(msg string, fields ...zap.Field)
-	Error(msg string, fields ...zap.Field)
-	Fatal(msg string, fields ...zap.Field)
-
-	// optional helpers
-	With(fields ...zap.Field) AppLogger
-	Sync() error
-}
 
 type Config struct {
 	Port    string

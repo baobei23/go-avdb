@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 	"fmt"
-	"log"
 )
 
 func (s *videoStore) Upsert(ctx context.Context, video *Video) error {
@@ -37,91 +36,75 @@ func (s *videoStore) Upsert(ctx context.Context, video *Video) error {
 	return err
 }
 
-// Helper generic upsert for reference tables
-func (s *videoStore) upsertRef(ctx context.Context, table string, value string) (int64, error) {
-	if value == "" {
-		return 0, nil
+func (s *videoStore) upsertBatchRefs(ctx context.Context, table string, names []string) ([]int64, error) {
+	if len(names) == 0 {
+		return nil, nil
 	}
 
-	var id int64
-	// Try to find existing
-	queryFind := fmt.Sprintf("SELECT id FROM %s WHERE name = $1", table)
-	err := s.db.QueryRow(ctx, queryFind, value).Scan(&id)
-	if err == nil {
-		return id, nil
-	}
-
-	// Insert new
-	queryInsert := fmt.Sprintf("INSERT INTO %s (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id", table)
-	err = s.db.QueryRow(ctx, queryInsert, value).Scan(&id)
+	queryInsert := fmt.Sprintf("INSERT INTO %s (name) SELECT unnest($1::text[]) ON CONFLICT (name) DO NOTHING", table)
+	_, err := s.db.Exec(ctx, queryInsert, names)
 	if err != nil {
-		return 0, fmt.Errorf("failed to upsert %s: %w", table, err)
+		return nil, fmt.Errorf("failed to batch insert %s: %w", table, err)
 	}
-	return id, nil
+
+	querySelect := fmt.Sprintf("SELECT id FROM %s WHERE name = ANY($1::text[])", table)
+	rows, err := s.db.Query(ctx, querySelect, names)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select ids %s: %w", table, err)
+	}
+	defer rows.Close()
+
+	var ids []int64
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, nil
+}
+
+func (s *videoStore) linkBatchRefs(ctx context.Context, table string, refColumn string, videoID int64, refIDs []int64) error {
+	if len(refIDs) == 0 {
+		return nil
+	}
+	query := fmt.Sprintf("INSERT INTO %s (video_id, %s) SELECT $1, unnest($2::bigint[]) ON CONFLICT DO NOTHING", table, refColumn)
+	_, err := s.db.Exec(ctx, query, videoID, refIDs)
+	return err
 }
 
 func (s *videoStore) UpsertActor(ctx context.Context, videoID int64, actor []string) error {
-	for _, name := range actor {
-		id, err := s.upsertRef(ctx, "actor", name)
-		if err != nil {
-			log.Printf("Error upserting actor %s: %v", name, err)
-			continue
-		}
-		if id == 0 {
-			continue
-		}
-		_, err = s.db.Exec(ctx, "INSERT INTO video_actor (video_id, actor_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
-		if err != nil {
-			log.Printf("Error linking actor %d to video %d: %v", id, videoID, err)
-		}
-	}
-	return nil
-}
-
-func (s *videoStore) UpsertTag(ctx context.Context, videoID int64, tag []string) error {
-	for _, name := range tag {
-		id, err := s.upsertRef(ctx, "tag", name)
-		if err != nil {
-			log.Printf("Error upserting tag %s: %v", name, err)
-			continue
-		}
-		if id == 0 {
-			continue
-		}
-		_, err = s.db.Exec(ctx, "INSERT INTO video_tag (video_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
-		if err != nil {
-			log.Printf("Error linking tag %d to video %d: %v", id, videoID, err)
-		}
-	}
-	return nil
-}
-
-func (s *videoStore) UpsertDirector(ctx context.Context, videoID int64, director []string) error {
-	for _, name := range director {
-		id, err := s.upsertRef(ctx, "director", name)
-		if err != nil {
-			log.Printf("Error upserting director %s: %v", name, err)
-			continue
-		}
-		if id == 0 {
-			continue
-		}
-		_, err = s.db.Exec(ctx, "INSERT INTO video_director (video_id, director_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
-		if err != nil {
-			log.Printf("Error linking director %d to video %d: %v", id, videoID, err)
-		}
-	}
-	return nil
-}
-
-func (s *videoStore) UpsertStudio(ctx context.Context, videoID int64, studioName string) error {
-	id, err := s.upsertRef(ctx, "studio", studioName)
+	ids, err := s.upsertBatchRefs(ctx, "actor", actor)
 	if err != nil {
 		return err
 	}
-	if id == 0 {
+	return s.linkBatchRefs(ctx, "video_actor", "actor_id", videoID, ids)
+}
+
+func (s *videoStore) UpsertTag(ctx context.Context, videoID int64, tag []string) error {
+	ids, err := s.upsertBatchRefs(ctx, "tag", tag)
+	if err != nil {
+		return err
+	}
+	return s.linkBatchRefs(ctx, "video_tag", "tag_id", videoID, ids)
+}
+
+func (s *videoStore) UpsertDirector(ctx context.Context, videoID int64, director []string) error {
+	ids, err := s.upsertBatchRefs(ctx, "director", director)
+	if err != nil {
+		return err
+	}
+	return s.linkBatchRefs(ctx, "video_director", "director_id", videoID, ids)
+}
+
+func (s *videoStore) UpsertStudio(ctx context.Context, videoID int64, studioName string) error {
+	if studioName == "" {
 		return nil
 	}
-	_, err = s.db.Exec(ctx, "INSERT INTO video_studio (video_id, studio_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", videoID, id)
-	return err
+	ids, err := s.upsertBatchRefs(ctx, "studio", []string{studioName})
+	if err != nil {
+		return err
+	}
+	return s.linkBatchRefs(ctx, "video_studio", "studio_id", videoID, ids)
 }

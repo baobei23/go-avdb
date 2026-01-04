@@ -2,31 +2,13 @@ package store
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type videoStore struct {
 	db *pgxpool.Pool
-}
-
-func (s *videoStore) GetList(ctx context.Context) ([]Video, error) {
-
-	rows, err := s.db.Query(ctx, "SELECT id, name, slug, poster_url FROM video ORDER BY created_at DESC LIMIT 20")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var videos []Video
-	for rows.Next() {
-		var v Video
-		if err := rows.Scan(&v.ID, &v.Name, &v.Slug, &v.PosterURL); err != nil {
-			return nil, err
-		}
-		videos = append(videos, v)
-	}
-	return videos, nil
 }
 
 func (s *videoStore) GetBySlug(ctx context.Context, slug string) (*Video, error) {
@@ -61,6 +43,8 @@ func (s *videoStore) GetBySlug(ctx context.Context, slug string) (*Video, error)
         ) d ON TRUE
         WHERE v.slug = $1
     `
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
 
 	var v Video
 	err := s.db.QueryRow(ctx, query, slug).Scan(
@@ -76,6 +60,99 @@ func (s *videoStore) GetBySlug(ctx context.Context, slug string) (*Video, error)
 
 }
 
-func (s *videoStore) GetVideo(ctx context.Context, limit, offset int, search string) ([]Video, int, error) {
-	return nil, 0, nil
+func (s *videoStore) GetList(ctx context.Context, limit, offset int, search string) ([]Video, int, error) {
+	// 1. Base WHERE clause
+	where := ""
+	args := []interface{}{}
+	argIdx := 1
+
+	if search != "" {
+		where = fmt.Sprintf("WHERE v.name ILIKE $%d", argIdx)
+		args = append(args, "%"+search+"%")
+		argIdx++
+	}
+
+	// 2. Count Query
+	var total int
+	countQuery := fmt.Sprintf(`SELECT COUNT(*) FROM video v %s`, where)
+	if err := s.db.QueryRow(ctx, countQuery, args...).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	// 3
+	query := fmt.Sprintf(`
+        WITH base AS (
+            SELECT v.id
+            FROM video v
+            %s
+            ORDER BY v.id DESC
+            LIMIT $%d OFFSET $%d
+        )
+        SELECT 
+            v.id, v.category, v.name, v.slug, v.origin_name, v.poster_url, v.thumb_url,
+            v.description, v.link_embed, v.created_at, v.updated_at,
+            COALESCE(a.actor, '{}'),
+            COALESCE(t.tag, '{}'),
+            COALESCE(s.studio, '{}'),
+            COALESCE(d.director, '{}')
+        FROM base
+        JOIN video v ON v.id = base.id
+
+        LEFT JOIN LATERAL (
+            SELECT ARRAY_AGG(a.name) AS actor
+            FROM video_actor va
+            JOIN actor a ON a.id = va.actor_id
+            WHERE va.video_id = v.id
+        ) a ON TRUE
+
+        LEFT JOIN LATERAL (
+            SELECT ARRAY_AGG(t.name) AS tag
+            FROM video_tag vt
+            JOIN tag t ON t.id = vt.tag_id
+            WHERE vt.video_id = v.id
+        ) t ON TRUE
+
+        LEFT JOIN LATERAL (
+            SELECT ARRAY_AGG(s.name) AS studio
+            FROM video_studio vs
+            JOIN studio s ON s.id = vs.studio_id
+            WHERE vs.video_id = v.id
+        ) s ON TRUE
+
+        LEFT JOIN LATERAL (
+            SELECT ARRAY_AGG(d.name) AS director
+            FROM video_director vd
+            JOIN director d ON d.id = vd.director_id
+            WHERE vd.video_id = v.id
+        ) d ON TRUE
+
+        ORDER BY v.id DESC
+    `, where, argIdx, argIdx+1)
+
+	args = append(args, limit, offset)
+
+	rows, err := s.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var videos []Video
+
+	for rows.Next() {
+		var v Video
+		err := rows.Scan(
+			&v.ID, &v.Category, &v.Name, &v.Slug, &v.OriginName,
+			&v.PosterURL, &v.ThumbURL, &v.Description, &v.LinkEmbed,
+			&v.CreatedAt, &v.UpdatedAt,
+			&v.Actor, &v.Tag, &v.Studio, &v.Director,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		videos = append(videos, v)
+	}
+
+	return videos, total, nil
 }

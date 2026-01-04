@@ -16,6 +16,21 @@ definitions:
       name:
         type: string
     type: object
+  api.getVideoList:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/store.Video'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      page_count:
+        type: integer
+      total:
+        type: integer
+    type: object
   store.Actor:
     properties:
       id:
@@ -269,6 +284,41 @@ paths:
       summary: Crawl range
       tags:
       - crawler
+  /video:
+    get:
+      consumes:
+      - application/json
+      description: Get video list
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Search
+        in: query
+        name: search
+        type: string
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.getVideoList'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get video list
+      tags:
+      - video
   /video/{slug}:
     get:
       consumes:
@@ -286,11 +336,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/store.Video'
+            items:
+              $ref: '#/definitions/store.Video'
+            type: array
         "500":
           description: Internal Server Error
-          schema:
-            type: string
+          schema: {}
       summary: Get video detail by slug
       tags:
       - video

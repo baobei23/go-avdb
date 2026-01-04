@@ -38,15 +38,11 @@ func (m *MockVideoStore) GetBySlug(ctx context.Context, slug string) (*Video, er
 	return &Video{}, nil
 }
 
-func (m *MockVideoStore) GetList(ctx context.Context) ([]Video, error) {
-	return []Video{}, nil
-}
-
 func (m *MockVideoStore) GetByActor(ctx context.Context, actor string) ([]Video, error) {
 	return []Video{}, nil
 }
 
-func (m *MockVideoStore) GetVideo(ctx context.Context, limit, offset int, search string) ([]Video, int, error) {
+func (m *MockVideoStore) GetList(ctx context.Context, limit, offset int, search string) ([]Video, int, error) {
 	return []Video{}, 0, nil
 }
 

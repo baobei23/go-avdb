@@ -8,6 +8,7 @@ import (
 type PaginationQuery struct {
 	Limit  int    `json:"limit"`
 	Offset int    `json:"offset"`
+	Page   int    `json:"page"`
 	Sort   string `json:"sort"`
 	Search string `json:"search"`
 }
@@ -24,18 +25,24 @@ func (fq PaginationQuery) Parse(r *http.Request) (PaginationQuery, error) {
 		fq.Limit = l
 	}
 
-	if fq.Limit == 0 {
+	if fq.Limit < 1 || fq.Limit > 100 {
 		fq.Limit = 20 // Default limit
 	}
 
-	offset := qs.Get("offset")
-	if offset != "" {
-		l, err := strconv.Atoi(offset)
+	page := qs.Get("page")
+	if page != "" {
+		p, err := strconv.Atoi(page)
 		if err != nil {
 			return fq, nil
 		}
-		fq.Offset = l
+		fq.Page = p
 	}
+
+	if fq.Page < 1 {
+		fq.Page = 1
+	}
+
+	fq.Offset = (fq.Page - 1) * fq.Limit
 
 	sort := qs.Get("sort")
 	if sort != "" {
