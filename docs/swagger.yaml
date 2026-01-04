@@ -20,7 +20,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/store.Video'
+          $ref: '#/definitions/store.VideoList'
         type: array
       limit:
         type: integer
@@ -38,26 +38,14 @@ definitions:
       name:
         type: string
     type: object
-  store.Video:
+  store.VideoList:
     properties:
-      actor:
-        items:
-          type: string
-        type: array
       category:
         type: string
       created_at:
         type: string
-      description:
-        type: string
-      director:
-        items:
-          type: string
-        type: array
       id:
         type: integer
-      link_embed:
-        type: string
       name:
         type: string
       origin_name:
@@ -66,14 +54,6 @@ definitions:
         type: string
       slug:
         type: string
-      studio:
-        items:
-          type: string
-        type: array
-      tag:
-        items:
-          type: string
-        type: array
       thumb_url:
         type: string
       updated_at:
@@ -337,7 +317,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/store.Video'
+              $ref: '#/definitions/store.VideoList'
             type: array
         "500":
           description: Internal Server Error

@@ -10,11 +10,11 @@ import (
 )
 
 type getVideoList struct {
-	Data      []store.Video `json:"data"`
-	Total     int           `json:"total"`
-	Page      int           `json:"page"`
-	PageCount int           `json:"page_count"`
-	Limit     int           `json:"limit"`
+	Data      []store.VideoList `json:"data"`
+	Total     int               `json:"total"`
+	Page      int               `json:"page"`
+	PageCount int               `json:"page_count"`
+	Limit     int               `json:"limit"`
 }
 
 // getVideo godoc
@@ -25,7 +25,7 @@ type getVideoList struct {
 //	@Accept			json
 //	@Produce		json
 //	@Param			slug	path		string	true	"Video slug"
-//	@Success		200		{object}	[]store.Video
+//	@Success		200		{object}	[]store.VideoList
 //	@Failure		500		{object}	error
 //	@Router			/video/{slug} [get]
 func (app *Application) getVideo(w http.ResponseWriter, r *http.Request) {

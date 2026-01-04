@@ -397,7 +397,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/store.Video"
+                                "$ref": "#/definitions/store.VideoList"
                             }
                         }
                     },
@@ -441,7 +441,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/store.Video"
+                        "$ref": "#/definitions/store.VideoList"
                     }
                 },
                 "limit": {
@@ -469,35 +469,17 @@ const docTemplate = `{
                 }
             }
         },
-        "store.Video": {
+        "store.VideoList": {
             "type": "object",
             "properties": {
-                "actor": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "category": {
                     "type": "string"
                 },
                 "created_at": {
                     "type": "string"
                 },
-                "description": {
-                    "type": "string"
-                },
-                "director": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "id": {
                     "type": "integer"
-                },
-                "link_embed": {
-                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -510,18 +492,6 @@ const docTemplate = `{
                 },
                 "slug": {
                     "type": "string"
-                },
-                "studio": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "tag": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "thumb_url": {
                     "type": "string"

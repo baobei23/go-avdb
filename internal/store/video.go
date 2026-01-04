@@ -60,7 +60,7 @@ func (s *videoStore) GetBySlug(ctx context.Context, slug string) (*Video, error)
 
 }
 
-func (s *videoStore) GetList(ctx context.Context, limit, offset int, search string) ([]Video, int, error) {
+func (s *videoStore) GetList(ctx context.Context, limit, offset int, search string) ([]VideoList, int, error) {
 	// 1. Base WHERE clause
 	where := ""
 	args := []interface{}{}
@@ -90,42 +90,9 @@ func (s *videoStore) GetList(ctx context.Context, limit, offset int, search stri
         )
         SELECT 
             v.id, v.category, v.name, v.slug, v.origin_name, v.poster_url, v.thumb_url,
-            v.description, v.link_embed, v.created_at, v.updated_at,
-            COALESCE(a.actor, '{}'),
-            COALESCE(t.tag, '{}'),
-            COALESCE(s.studio, '{}'),
-            COALESCE(d.director, '{}')
+            v.created_at, v.updated_at
         FROM base
         JOIN video v ON v.id = base.id
-
-        LEFT JOIN LATERAL (
-            SELECT ARRAY_AGG(a.name) AS actor
-            FROM video_actor va
-            JOIN actor a ON a.id = va.actor_id
-            WHERE va.video_id = v.id
-        ) a ON TRUE
-
-        LEFT JOIN LATERAL (
-            SELECT ARRAY_AGG(t.name) AS tag
-            FROM video_tag vt
-            JOIN tag t ON t.id = vt.tag_id
-            WHERE vt.video_id = v.id
-        ) t ON TRUE
-
-        LEFT JOIN LATERAL (
-            SELECT ARRAY_AGG(s.name) AS studio
-            FROM video_studio vs
-            JOIN studio s ON s.id = vs.studio_id
-            WHERE vs.video_id = v.id
-        ) s ON TRUE
-
-        LEFT JOIN LATERAL (
-            SELECT ARRAY_AGG(d.name) AS director
-            FROM video_director vd
-            JOIN director d ON d.id = vd.director_id
-            WHERE vd.video_id = v.id
-        ) d ON TRUE
-
         ORDER BY v.id DESC
     `, where, argIdx, argIdx+1)
 
@@ -137,15 +104,14 @@ func (s *videoStore) GetList(ctx context.Context, limit, offset int, search stri
 	}
 	defer rows.Close()
 
-	var videos []Video
+	var videos []VideoList
 
 	for rows.Next() {
-		var v Video
+		var v VideoList
 		err := rows.Scan(
 			&v.ID, &v.Category, &v.Name, &v.Slug, &v.OriginName,
-			&v.PosterURL, &v.ThumbURL, &v.Description, &v.LinkEmbed,
+			&v.PosterURL, &v.ThumbURL,
 			&v.CreatedAt, &v.UpdatedAt,
-			&v.Actor, &v.Tag, &v.Studio, &v.Director,
 		)
 		if err != nil {
 			return nil, 0, err
