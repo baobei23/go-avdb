@@ -117,7 +117,14 @@ func main() {
 	// metrics collected
 	expvar.NewString("version").Set(cfg.Version)
 	expvar.Publish("database", expvar.Func(func() any {
-		return db.Stat()
+		stats := db.Stat()
+		return map[string]interface{}{
+			"total_conns":        stats.TotalConns(),
+			"idle_conns":         stats.IdleConns(),
+			"acquired_conns":     stats.AcquiredConns(),
+			"constructing_conns": stats.ConstructingConns(),
+			"max_conns":          stats.MaxConns(),
+		}
 	}))
 	expvar.Publish("goroutines", expvar.Func(func() any {
 		return runtime.NumGoroutine()

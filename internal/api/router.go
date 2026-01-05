@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"errors"
+	"expvar"
 	"net/http"
 	"os"
 	"os/signal"
@@ -44,6 +45,9 @@ func (app *Application) Mount() http.Handler {
 
 	//health
 	r.Get("/", app.health)
+
+	//metrics
+	r.Get("/metrics", expvar.Handler().ServeHTTP)
 
 	//swagger
 	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL("doc.json")))
