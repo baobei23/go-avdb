@@ -25,7 +25,7 @@ type Config struct {
 	DB          DBConfig
 	Crawler     crawler.Config
 	Env         string
-	Version     string
+	ApiVersion  string
 	RedisCfg    RedisConfig
 	RateLimiter ratelimiter.Config
 }

@@ -50,8 +50,8 @@ func main() {
 			PageDelay:       time.Duration(env.GetInt("CRAWLER_PAGE_DELAY", 2)) * time.Second,
 			WorkerCount:     env.GetInt("CRAWLER_WORKER_COUNT", 3),
 		},
-		Env:     env.GetString("ENV", "development"),
-		Version: env.GetString("VERSION", "1.0.0"),
+		Env:        env.GetString("ENV", "development"),
+		ApiVersion: "1.0.0",
 		RedisCfg: api.RedisConfig{
 			Addr:     env.GetString("REDIS_ADDR", "localhost:6379"),
 			Password: env.GetString("REDIS_PASSWORD", ""),
@@ -115,7 +115,7 @@ func main() {
 	}
 
 	// metrics collected
-	expvar.NewString("version").Set(cfg.Version)
+	expvar.NewString("version").Set(cfg.ApiVersion)
 	expvar.Publish("database", expvar.Func(func() any {
 		stats := db.Stat()
 		return map[string]interface{}{
