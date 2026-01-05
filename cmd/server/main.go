@@ -11,6 +11,8 @@ import (
 	"github.com/baobei23/go-avdb/internal/crawler"
 	"github.com/baobei23/go-avdb/internal/db"
 	"github.com/baobei23/go-avdb/internal/env"
+	"github.com/baobei23/go-avdb/internal/store/cache"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/baobei23/go-avdb/internal/store"
 	"go.uber.org/zap"
@@ -49,6 +51,12 @@ func main() {
 		},
 		Env:     env.GetString("ENV", "development"),
 		Version: env.GetString("VERSION", "1.0.0"),
+		RedisCfg: api.RedisConfig{
+			Addr:     env.GetString("REDIS_ADDR", "localhost:6379"),
+			Password: env.GetString("REDIS_PASSWORD", ""),
+			DB:       env.GetInt("REDIS_DB", 0),
+			Enabled:  env.GetBool("REDIS_ENABLED", false),
+		},
 	}
 	// logger
 	logger := zap.Must(zap.NewProduction())
@@ -68,18 +76,28 @@ func main() {
 	defer db.Close()
 	logger.Info("database connection pool established")
 
+	// cache
+	var redis *redis.Client
+	if cfg.RedisCfg.Enabled {
+		redis = cache.NewRedisClient(cfg.RedisCfg.Addr, cfg.RedisCfg.Password, cfg.RedisCfg.DB)
+	}
+
 	// storage
 	storage := store.NewStorage(db)
+
+	// redis
+	cacheStorage := cache.NewRedisStorage(redis)
 
 	// crawler
 	crawlerService := crawler.NewService(cfg.Crawler, storage)
 
 	// application
 	app := &api.Application{
-		Config:  cfg,
-		Store:   storage,
-		Logger:  logger,
-		Crawler: crawlerService,
+		Config:       cfg,
+		Store:        storage,
+		CacheStorage: cacheStorage,
+		Logger:       logger,
+		Crawler:      crawlerService,
 	}
 
 	// metrics collected
