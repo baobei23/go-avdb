@@ -14,11 +14,11 @@ func (app *Application) internalServerError(w http.ResponseWriter, r *http.Reque
 }
 
 // 403
-func (app *Application) forbiddenResponse(w http.ResponseWriter, r *http.Request) {
-	app.Logger.Warn("forbidden", zap.String("method", r.Method), zap.String("path", r.URL.Path))
+// func (app *Application) forbiddenResponse(w http.ResponseWriter, r *http.Request) {
+// 	app.Logger.Warn("forbidden", zap.String("method", r.Method), zap.String("path", r.URL.Path))
 
-	writeJSONError(w, http.StatusForbidden, "forbidden")
-}
+// 	writeJSONError(w, http.StatusForbidden, "forbidden")
+// }
 
 // 400
 func (app *Application) badRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
@@ -42,20 +42,20 @@ func (app *Application) notFoundResponse(w http.ResponseWriter, r *http.Request,
 }
 
 // 401
-func (app *Application) unauthorizedErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
-	app.Logger.Warn("unauthorized error", zap.String("method", r.Method), zap.String("path", r.URL.Path), zap.Error(err))
+// func (app *Application) unauthorizedErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
+// 	app.Logger.Warn("unauthorized error", zap.String("method", r.Method), zap.String("path", r.URL.Path), zap.Error(err))
 
-	writeJSONError(w, http.StatusUnauthorized, "unauthorized")
-}
+// 	writeJSONError(w, http.StatusUnauthorized, "unauthorized")
+// }
 
 // 401 Basic
-func (app *Application) unauthorizedBasicErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
-	app.Logger.Warn("unauthorized basic error", zap.String("method", r.Method), zap.String("path", r.URL.Path), zap.Error(err))
+// func (app *Application) unauthorizedBasicErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
+// 	app.Logger.Warn("unauthorized basic error", zap.String("method", r.Method), zap.String("path", r.URL.Path), zap.Error(err))
 
-	w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
+// 	w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
 
-	writeJSONError(w, http.StatusUnauthorized, "unauthorized")
-}
+// 	writeJSONError(w, http.StatusUnauthorized, "unauthorized")
+// }
 
 // 429
 func (app *Application) rateLimitExceededResponse(w http.ResponseWriter, r *http.Request, retryAfter string) {
