@@ -60,15 +60,15 @@ func (s *videoStore) GetBySlug(ctx context.Context, slug string) (*Video, error)
 
 }
 
-func (s *videoStore) GetList(ctx context.Context, limit, offset int, search string) ([]VideoList, int, error) {
+func (s *videoStore) GetList(ctx context.Context, pq PaginationQuery) ([]VideoList, int, error) {
 	// 1. Base WHERE clause
 	where := ""
 	args := []interface{}{}
 	argIdx := 1
 
-	if search != "" {
+	if pq.Search != "" {
 		where = fmt.Sprintf("WHERE v.name ILIKE $%d", argIdx)
-		args = append(args, "%"+search+"%")
+		args = append(args, "%"+pq.Search+"%")
 		argIdx++
 	}
 
@@ -96,7 +96,7 @@ func (s *videoStore) GetList(ctx context.Context, limit, offset int, search stri
         ORDER BY v.id DESC
     `, where, argIdx, argIdx+1)
 
-	args = append(args, limit, offset)
+	args = append(args, pq.Limit, pq.Offset)
 
 	rows, err := s.db.Query(ctx, query, args...)
 	if err != nil {

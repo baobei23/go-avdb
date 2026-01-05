@@ -3,7 +3,6 @@ package api
 import (
 	"math"
 	"net/http"
-	"strconv"
 
 	"github.com/baobei23/go-avdb/internal/store"
 	"github.com/go-chi/chi/v5"
@@ -51,29 +50,18 @@ func (app *Application) getVideo(w http.ResponseWriter, r *http.Request) {
 //	@Param			page	query		int		false	"Page"
 //	@Param			limit	query		int		false	"Limit"
 //	@Param			search	query		string	false	"Search"
-//	@Param			sort	query		string	false	"Sort"
 //	@Success		200		{object}	getVideoList
 //	@Failure		500		{object}	error
 //	@Router			/video [get]
 func (app *Application) getVideoList(w http.ResponseWriter, r *http.Request) {
-
-	pageStr := r.URL.Query().Get("page")
-	limitStr := r.URL.Query().Get("limit")
-	search := r.URL.Query().Get("search")
-
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		page = 1
+	pq := store.PaginationQuery{}
+	pq, err := pq.Parse(r)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
 	}
 
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit < 1 || limit > 100 {
-		limit = 20
-	}
-
-	offset := (page - 1) * limit
-
-	videos, total, err := app.Store.Video.GetList(r.Context(), limit, offset, search)
+	videos, total, err := app.Store.Video.GetList(r.Context(), pq)
 	if err != nil {
 		app.internalServerError(w, r, err)
 		return
@@ -82,9 +70,9 @@ func (app *Application) getVideoList(w http.ResponseWriter, r *http.Request) {
 	if err := app.jsonResponse(w, http.StatusOK, getVideoList{
 		Data:      videos,
 		Total:     total,
-		Page:      page,
-		PageCount: int(math.Ceil(float64(total) / float64(limit))),
-		Limit:     limit,
+		Page:      pq.Page,
+		PageCount: int(math.Ceil(float64(total) / float64(pq.Limit))),
+		Limit:     pq.Limit,
 	}); err != nil {
 		app.internalServerError(w, r, err)
 	}

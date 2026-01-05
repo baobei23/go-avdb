@@ -42,7 +42,7 @@ func (m *MockVideoStore) GetByActor(ctx context.Context, actor string) ([]Video,
 	return []Video{}, nil
 }
 
-func (m *MockVideoStore) GetList(ctx context.Context, limit, offset int, search string) ([]VideoList, int, error) {
+func (m *MockVideoStore) GetList(ctx context.Context, pq PaginationQuery) ([]VideoList, int, error) {
 	return []VideoList{}, 0, nil
 }
 

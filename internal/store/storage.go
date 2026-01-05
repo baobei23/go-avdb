@@ -21,7 +21,7 @@ type Storage struct {
 
 		// Read
 		GetBySlug(ctx context.Context, slug string) (*Video, error)
-		GetList(ctx context.Context, limit, offset int, search string) ([]VideoList, int, error)
+		GetList(ctx context.Context, pq PaginationQuery) ([]VideoList, int, error)
 		//GetByActor(ctx context.Context, actor string) ([]Video, error)
 
 		// Relationship operations

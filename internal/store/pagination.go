@@ -9,7 +9,6 @@ type PaginationQuery struct {
 	Limit  int    `json:"limit"`
 	Offset int    `json:"offset"`
 	Page   int    `json:"page"`
-	Sort   string `json:"sort"`
 	Search string `json:"search"`
 }
 
@@ -43,13 +42,6 @@ func (fq PaginationQuery) Parse(r *http.Request) (PaginationQuery, error) {
 	}
 
 	fq.Offset = (fq.Page - 1) * fq.Limit
-
-	sort := qs.Get("sort")
-	if sort != "" {
-		fq.Sort = sort
-	} else {
-		fq.Sort = "desc" // Default sort
-	}
 
 	search := qs.Get("search")
 	if search != "" {
