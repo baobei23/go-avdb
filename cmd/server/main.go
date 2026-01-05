@@ -51,7 +51,7 @@ func main() {
 			WorkerCount:     env.GetInt("CRAWLER_WORKER_COUNT", 3),
 		},
 		Env:        env.GetString("ENV", "development"),
-		ApiVersion: "1.0.0",
+		ApiVersion: "",
 		RedisCfg: api.RedisConfig{
 			Addr:     env.GetString("REDIS_ADDR", "localhost:6379"),
 			Password: env.GetString("REDIS_PASSWORD", ""),
