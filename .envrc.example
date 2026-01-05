@@ -1,0 +1,30 @@
+# App
+export ENV=development
+export PORT=:8080
+export API_URL=http://localhost:8080
+
+# Database
+export DB_ADDR="postgres://admin:adminpassword@localhost:5432/avdb?sslmode=disable"
+export DB_MAX_OPEN_CONNS=30
+export DB_MAX_IDLE_CONNS=30
+export DB_MAX_IDLE_TIME=15        # minutes
+export DB_MAX_CONN_LIFETIME=1     # hours
+
+# Crawler
+export BASE_URL_PROVIDE=https://avdbapi.com/api.php/provide/vod/
+export BASE_URL_PROVIDE1=https://avdbapi.com/api.php/provide1/vod/
+export CRAWLER_TIMEOUT=30         # seconds
+export CRAWLER_MAX_RETRIES=3
+export CRAWLER_PAGE_DELAY=2       # seconds
+export CRAWLER_WORKER_COUNT=3
+
+# Redis
+export REDIS_ADDR=localhost:6379
+export REDIS_PASSWORD=""
+export REDIS_DB=0
+export REDIS_ENABLED=false
+
+# Rate Limiter
+export RATE_LIMITER_REQUESTS_PER_TIME_FRAME=1000
+export RATE_LIMITER_TIME_FRAME=1  # minutes
+export RATE_LIMITER_ENABLED=false
