@@ -96,7 +96,3 @@ Swagger documentation is available at:
 ## License
 
 [MIT](LICENSE)
-
-```
-
-```
