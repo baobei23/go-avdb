@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/baobei23/go-avdb/compare/v1.0.0...v1.1.0) (2026-01-05)
+
+
+### Features
+
+* add getlistbyactor route ([ec4361e](https://github.com/baobei23/go-avdb/commit/ec4361eb12ecd5148f80e0e867aa8c79e64ebcac))
+
 ## 1.0.0 (2026-01-05)
 
 
