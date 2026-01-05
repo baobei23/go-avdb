@@ -80,6 +80,7 @@ func main() {
 	var redis *redis.Client
 	if cfg.RedisCfg.Enabled {
 		redis = cache.NewRedisClient(cfg.RedisCfg.Addr, cfg.RedisCfg.Password, cfg.RedisCfg.DB)
+		logger.Info("redis connection pool established")
 	}
 
 	// storage
