@@ -363,6 +363,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/video/actor/{actor}": {
+            "get": {
+                "description": "Get video list by actor",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "Get video list by actor",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Actor",
+                        "name": "actor",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.getVideoList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/video/{slug}": {
             "get": {
                 "description": "Get video detail by slug",
@@ -440,6 +488,9 @@ const docTemplate = `{
                 },
                 "limit": {
                     "type": "integer"
+                },
+                "metadata": {
+                    "type": "string"
                 },
                 "page": {
                     "type": "integer"

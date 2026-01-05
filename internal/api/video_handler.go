@@ -15,6 +15,7 @@ type getVideoList struct {
 	Page      int               `json:"page"`
 	PageCount int               `json:"page_count"`
 	Limit     int               `json:"limit"`
+	MetaData  string            `json:"metadata,omitempty"`
 }
 
 // getVideo godoc
@@ -73,6 +74,46 @@ func (app *Application) getVideoList(w http.ResponseWriter, r *http.Request) {
 		Page:      pq.Page,
 		PageCount: int(math.Ceil(float64(total) / float64(pq.Limit))),
 		Limit:     pq.Limit,
+	}); err != nil {
+		app.internalServerError(w, r, err)
+	}
+}
+
+// getVideoListByActor godoc
+//
+//	@Summary		Get video list by actor
+//	@Description	Get video list by actor
+//	@Tags			video
+//	@Accept			json
+//	@Produce		json
+//	@Param			actor	path		string	true	"Actor"
+//	@Param			page	query		int		false	"Page"
+//	@Param			limit	query		int		false	"Limit"
+//	@Success		200		{object}	getVideoList
+//	@Failure		500		{object}	error
+//	@Router			/video/actor/{actor} [get]
+func (app *Application) getVideoListByActor(w http.ResponseWriter, r *http.Request) {
+	actor := chi.URLParam(r, "actor")
+	pq := store.PaginationQuery{}
+	pq, err := pq.Parse(r)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	videos, total, err := app.Store.Video.GetListByActor(r.Context(), actor, pq)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusOK, getVideoList{
+		Data:      videos,
+		Total:     total,
+		Page:      pq.Page,
+		PageCount: int(math.Ceil(float64(total) / float64(pq.Limit))),
+		Limit:     pq.Limit,
+		MetaData:  actor,
 	}); err != nil {
 		app.internalServerError(w, r, err)
 	}

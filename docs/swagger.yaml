@@ -24,6 +24,8 @@ definitions:
         type: array
       limit:
         type: integer
+      metadata:
+        type: string
       page:
         type: integer
       page_count:
@@ -319,6 +321,38 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Get video detail by slug
+      tags:
+      - video
+  /video/actor/{actor}:
+    get:
+      consumes:
+      - application/json
+      description: Get video list by actor
+      parameters:
+      - description: Actor
+        in: path
+        name: actor
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.getVideoList'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get video list by actor
       tags:
       - video
 swagger: "2.0"

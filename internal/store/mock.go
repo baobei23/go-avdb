@@ -4,46 +4,11 @@ import "context"
 
 func NewMockStore() Storage {
 	return Storage{
-		Video:    &MockVideoStore{},
 		Actor:    &MockActorStore{},
 		Director: &MockDirectorStore{},
 		Tag:      &MockTagStore{},
 		Studio:   &MockStudioStore{},
 	}
-}
-
-type MockVideoStore struct{}
-
-func (m *MockVideoStore) Upsert(ctx context.Context, video *Video) error {
-	return nil
-}
-
-func (m *MockVideoStore) UpsertActor(ctx context.Context, videoID int64, actor []string) error {
-	return nil
-}
-
-func (m *MockVideoStore) UpsertTag(ctx context.Context, videoID int64, tag []string) error {
-	return nil
-}
-
-func (m *MockVideoStore) UpsertDirector(ctx context.Context, videoID int64, director []string) error {
-	return nil
-}
-
-func (m *MockVideoStore) UpsertStudio(ctx context.Context, videoID int64, studio string) error {
-	return nil
-}
-
-func (m *MockVideoStore) GetBySlug(ctx context.Context, slug string) (*Video, error) {
-	return &Video{}, nil
-}
-
-func (m *MockVideoStore) GetByActor(ctx context.Context, actor string) ([]Video, error) {
-	return []Video{}, nil
-}
-
-func (m *MockVideoStore) GetList(ctx context.Context, pq PaginationQuery) ([]VideoList, int, error) {
-	return []VideoList{}, 0, nil
 }
 
 type MockActorStore struct{}

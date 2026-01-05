@@ -63,7 +63,7 @@ func (app *Application) Mount() http.Handler {
 	r.Route("/video", func(r chi.Router) {
 		r.Get("/", app.getVideoList)
 		r.Get("/{slug}", app.getVideo)
-		//r.Get("/actor/{actor}", app.getVideoByActor)
+		r.Get("/actor/{actor}", app.getVideoListByActor)
 	})
 
 	// Actor

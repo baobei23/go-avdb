@@ -22,7 +22,7 @@ type Storage struct {
 		// Read
 		GetBySlug(ctx context.Context, slug string) (*Video, error)
 		GetList(ctx context.Context, pq PaginationQuery) ([]VideoList, int, error)
-		//GetByActor(ctx context.Context, actor string) ([]Video, error)
+		GetListByActor(ctx context.Context, actor string, pq PaginationQuery) ([]VideoList, int, error)
 
 		// Relationship operations
 		UpsertActor(ctx context.Context, videoID int64, actor []string) error
