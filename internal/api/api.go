@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/baobei23/go-avdb/internal/crawler"
+	"github.com/baobei23/go-avdb/internal/ratelimiter"
 	"github.com/baobei23/go-avdb/internal/store"
 	"github.com/baobei23/go-avdb/internal/store/cache"
 	"go.uber.org/zap"
@@ -15,16 +16,18 @@ type Application struct {
 	CacheStorage cache.Storage
 	Crawler      crawler.Crawler
 	Logger       *zap.Logger
+	RateLimiter  ratelimiter.Limiter
 }
 
 type Config struct {
-	Port     string
-	ApiURL   string
-	DB       DBConfig
-	Crawler  crawler.Config
-	Env      string
-	Version  string
-	RedisCfg RedisConfig
+	Port        string
+	ApiURL      string
+	DB          DBConfig
+	Crawler     crawler.Config
+	Env         string
+	Version     string
+	RedisCfg    RedisConfig
+	RateLimiter ratelimiter.Config
 }
 
 type RedisConfig struct {

@@ -11,6 +11,7 @@ import (
 	"github.com/baobei23/go-avdb/internal/crawler"
 	"github.com/baobei23/go-avdb/internal/db"
 	"github.com/baobei23/go-avdb/internal/env"
+	"github.com/baobei23/go-avdb/internal/ratelimiter"
 	"github.com/baobei23/go-avdb/internal/store/cache"
 	"github.com/redis/go-redis/v9"
 
@@ -57,6 +58,11 @@ func main() {
 			DB:       env.GetInt("REDIS_DB", 0),
 			Enabled:  env.GetBool("REDIS_ENABLED", false),
 		},
+		RateLimiter: ratelimiter.Config{
+			RequestsPerTimeFrame: env.GetInt("RATE_LIMITER_REQUESTS_PER_TIME_FRAME", 1000),
+			TimeFrame:            time.Duration(env.GetInt("RATE_LIMITER_TIME_FRAME", 1)) * time.Minute,
+			Enabled:              env.GetBool("RATE_LIMITER_ENABLED", false),
+		},
 	}
 	// logger
 	logger := zap.Must(zap.NewProduction())
@@ -83,6 +89,12 @@ func main() {
 		logger.Info("redis connection pool established")
 	}
 
+	// rate limiter
+	rateLimiter := ratelimiter.NewFixedWindowLimiter(
+		cfg.RateLimiter.RequestsPerTimeFrame,
+		cfg.RateLimiter.TimeFrame,
+	)
+
 	// storage
 	storage := store.NewStorage(db)
 
@@ -99,6 +111,7 @@ func main() {
 		CacheStorage: cacheStorage,
 		Logger:       logger,
 		Crawler:      crawlerService,
+		RateLimiter:  rateLimiter,
 	}
 
 	// metrics collected

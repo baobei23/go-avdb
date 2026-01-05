@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// TODO: implement cache
 type getVideoList struct {
 	Data      []store.VideoList `json:"data"`
 	Total     int               `json:"total"`

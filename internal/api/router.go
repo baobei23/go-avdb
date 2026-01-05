@@ -38,6 +38,10 @@ func (app *Application) Mount() http.Handler {
 	// processing should be stopped.
 	r.Use(middleware.Timeout(60 * time.Second))
 
+	if app.Config.RateLimiter.Enabled {
+		r.Use(app.RateLimiterMiddleware)
+	}
+
 	//health
 	r.Get("/", app.health)
 
