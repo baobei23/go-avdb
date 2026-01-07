@@ -195,6 +195,11 @@
         },
         "/crawl/all": {
             "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
                 "description": "Crawl all pages asynchronously",
                 "produces": [
                     "application/json"
@@ -210,6 +215,12 @@
                             "$ref": "#/definitions/api.CrawlResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -221,6 +232,11 @@
         },
         "/crawl/range": {
             "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
                 "description": "Crawl range of pages asynchronously",
                 "produces": [
                     "application/json"
@@ -258,6 +274,12 @@
                             "type": "string"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -269,6 +291,11 @@
         },
         "/crawl/{page}": {
             "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
                 "description": "Crawl single page asynchronously",
                 "produces": [
                     "application/json"
@@ -295,6 +322,12 @@
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "string"
                         }

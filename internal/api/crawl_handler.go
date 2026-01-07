@@ -25,7 +25,9 @@ type CrawlResponse struct {
 //	@Param			page	path		int	true	"Page number"
 //	@Success		202		{object}	CrawlResponse
 //	@Failure		400		{string}	error
+//	@Failure		401		{string}	error
 //	@Failure		500		{string}	error
+//	@Security		BasicAuth
 //	@Router			/crawl/{page} [get]
 func (app *Application) crawlPage(w http.ResponseWriter, r *http.Request) {
 	pageStr := chi.URLParam(r, "page")
@@ -58,6 +60,8 @@ func (app *Application) crawlPage(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Success		202	{object}	CrawlResponse
 //	@Failure		500	{string}	error
+//	@Failure		401	{string}	error
+//	@Security		BasicAuth
 //	@Router			/crawl/all [get]
 func (app *Application) crawlAll(w http.ResponseWriter, r *http.Request) {
 	go func() {
@@ -85,6 +89,8 @@ func (app *Application) crawlAll(w http.ResponseWriter, r *http.Request) {
 //	@Success		202		{object}	CrawlResponse
 //	@Failure		400		{string}	error
 //	@Failure		500		{string}	error
+//	@Failure		401		{string}	error
+//	@Security		BasicAuth
 //	@Router			/crawl/range [get]
 func (app *Application) crawlRange(w http.ResponseWriter, r *http.Request) {
 	startStr := r.URL.Query().Get("start")

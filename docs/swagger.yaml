@@ -210,10 +210,16 @@ paths:
           description: Bad Request
           schema:
             type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BasicAuth: []
       summary: Crawl page
       tags:
       - crawler
@@ -227,10 +233,16 @@ paths:
           description: Accepted
           schema:
             $ref: '#/definitions/api.CrawlResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BasicAuth: []
       summary: Crawl all
       tags:
       - crawler
@@ -259,10 +271,16 @@ paths:
           description: Bad Request
           schema:
             type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BasicAuth: []
       summary: Crawl range
       tags:
       - crawler

@@ -63,6 +63,10 @@ func main() {
 			TimeFrame:            time.Duration(env.GetInt("RATE_LIMITER_TIME_FRAME", 1)) * time.Minute,
 			Enabled:              env.GetBool("RATE_LIMITER_ENABLED", false),
 		},
+		Auth: api.AuthConfig{
+			User: env.GetString("AUTH_USER", "admin"),
+			Pass: env.GetString("AUTH_PASS", "admin"),
+		},
 	}
 	// logger
 	logger := zap.Must(zap.NewProduction())

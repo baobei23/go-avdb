@@ -28,6 +28,7 @@ type Config struct {
 	ApiVersion  string
 	RedisCfg    RedisConfig
 	RateLimiter ratelimiter.Config
+	Auth        AuthConfig
 }
 
 type RedisConfig struct {
@@ -43,4 +44,9 @@ type DBConfig struct {
 	MaxIdleConns    int
 	MaxIdleTime     time.Duration
 	MaxConnLifetime time.Duration
+}
+
+type AuthConfig struct {
+	User string
+	Pass string
 }

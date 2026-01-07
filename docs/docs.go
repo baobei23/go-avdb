@@ -203,6 +203,11 @@ const docTemplate = `{
         },
         "/crawl/all": {
             "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
                 "description": "Crawl all pages asynchronously",
                 "produces": [
                     "application/json"
@@ -218,6 +223,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/api.CrawlResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -229,6 +240,11 @@ const docTemplate = `{
         },
         "/crawl/range": {
             "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
                 "description": "Crawl range of pages asynchronously",
                 "produces": [
                     "application/json"
@@ -266,6 +282,12 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -277,6 +299,11 @@ const docTemplate = `{
         },
         "/crawl/{page}": {
             "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
                 "description": "Crawl single page asynchronously",
                 "produces": [
                     "application/json"
@@ -303,6 +330,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "string"
                         }

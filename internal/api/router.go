@@ -54,6 +54,7 @@ func (app *Application) Mount() http.Handler {
 
 	//crawler
 	r.Route("/crawl", func(r chi.Router) {
+		r.Use(app.BasicAuthMiddleware())
 		r.Get("/{page}", app.crawlPage)
 		r.Get("/all", app.crawlAll)
 		r.Get("/range", app.crawlRange)
