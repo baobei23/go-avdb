@@ -158,3 +158,43 @@ func (app *Application) getVideoListByDirector(w http.ResponseWriter, r *http.Re
 		app.internalServerError(w, r, err)
 	}
 }
+
+// getVideoListByStudio godoc
+//
+//	@Summary		Get video list by studio
+//	@Description	Get video list by studio
+//	@Tags			video
+//	@Accept			json
+//	@Produce		json
+//	@Param			studio	path		string	true	"Studio"
+//	@Param			page	query		int		false	"Page"
+//	@Param			limit	query		int		false	"Limit"
+//	@Success		200		{object}	getVideoList
+//	@Failure		500		{object}	error
+//	@Router			/video/studio/{studio} [get]
+func (app *Application) getVideoListByStudio(w http.ResponseWriter, r *http.Request) {
+	studio := chi.URLParam(r, "studio")
+	pq := store.PaginationQuery{}
+	pq, err := pq.Parse(r)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	videos, total, err := app.Store.Video.GetListByStudio(r.Context(), studio, pq)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusOK, getVideoList{
+		Data:      videos,
+		Total:     total,
+		Page:      pq.Page,
+		PageCount: int(math.Ceil(float64(total) / float64(pq.Limit))),
+		Limit:     pq.Limit,
+		MetaData:  studio,
+	}); err != nil {
+		app.internalServerError(w, r, err)
+	}
+}

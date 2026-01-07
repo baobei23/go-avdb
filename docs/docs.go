@@ -459,6 +459,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/video/studio/{studio}": {
+            "get": {
+                "description": "Get video list by studio",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "Get video list by studio",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Studio",
+                        "name": "studio",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.getVideoList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/video/{slug}": {
             "get": {
                 "description": "Get video detail by slug",

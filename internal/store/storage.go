@@ -24,6 +24,7 @@ type Storage struct {
 		GetList(ctx context.Context, pq PaginationQuery) ([]VideoList, int, error)
 		GetListByActor(ctx context.Context, actor string, pq PaginationQuery) ([]VideoList, int, error)
 		GetListByDirector(ctx context.Context, director string, pq PaginationQuery) ([]VideoList, int, error)
+		GetListByStudio(ctx context.Context, studio string, pq PaginationQuery) ([]VideoList, int, error)
 
 		// Relationship operations
 		UpsertActor(ctx context.Context, videoID int64, actor []string) error

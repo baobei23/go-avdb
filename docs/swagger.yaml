@@ -387,4 +387,36 @@ paths:
       summary: Get video list by director
       tags:
       - video
+  /video/studio/{studio}:
+    get:
+      consumes:
+      - application/json
+      description: Get video list by studio
+      parameters:
+      - description: Studio
+        in: path
+        name: studio
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.getVideoList'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get video list by studio
+      tags:
+      - video
 swagger: "2.0"
