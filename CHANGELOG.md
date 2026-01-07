@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0](https://github.com/baobei23/go-avdb/compare/v1.0.0...v1.1.0) (2026-01-07)
+
+
+### Features
+
+* add getlistbyactor route ([ec4361e](https://github.com/baobei23/go-avdb/commit/ec4361eb12ecd5148f80e0e867aa8c79e64ebcac))
+* add getVideoListByDirector ([e7b6b4c](https://github.com/baobei23/go-avdb/commit/e7b6b4cc1216d4db6710d11f9a42401ecffa015b))
+* add getVideoListByStudio ([5d8e03d](https://github.com/baobei23/go-avdb/commit/5d8e03dec02e508b94935889ab7e0033848ba752))
+* add getVideoListByTag ([e2f2e3b](https://github.com/baobei23/go-avdb/commit/e2f2e3b0849c8c219fff0139f28ec04ec3c59367))
+* implement basic auth to crawler ([e1bdb88](https://github.com/baobei23/go-avdb/commit/e1bdb88ec6d74f1e547717733ef120e497ccf42a))
+
 ## 1.0.0 (2026-01-05)
 
 
