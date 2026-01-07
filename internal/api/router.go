@@ -64,6 +64,7 @@ func (app *Application) Mount() http.Handler {
 		r.Get("/", app.getVideoList)
 		r.Get("/{slug}", app.getVideo)
 		r.Get("/actor/{actor}", app.getVideoListByActor)
+		r.Get("/director/{director}", app.getVideoListByDirector)
 	})
 
 	// Actor
